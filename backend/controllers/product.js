@@ -30,6 +30,7 @@ const createProduct = (req, res) => {
             });
         }
 
+        // Validation on the fields Check if all required fields are present
         const { name, description, price, category, stock } = fields;
         if (
             !name ||
@@ -45,7 +46,7 @@ const createProduct = (req, res) => {
 
         let product = new Product(fields);
 
-        //handle file here
+        // Handle file here
         if (file.photo) {
             if (file.photo.size > 3000000) {
                 return res.status(400).json({
@@ -76,6 +77,7 @@ const getProduct = (req, res) => {
 }
 
 //To optimize the loading time of the image 
+//we are using this function to get the image from the database and send it to the client
 const photo = (req, res, next) => {
     if (req.product.photo.data) {
         res.set("Content-Type", req.product.photo.contentType);
@@ -97,7 +99,7 @@ const updateProduct = (req, res) => {
         }
         //using lodash we update the product
         let product = req.product;
-        product = _.extend(product, fields);
+        product = _.extend(product, fields); // extend function from lodash library is used to copy one object into another object
 
         //handle file here
         if (file.photo) {
@@ -136,7 +138,10 @@ const deleteProduct = (req, res) => {
 
 //get all products
 const getAllProducts = (req, res) => {
+    //For pagination we can use limit and sort by query parameters
+    //limit is used to limit the number of products to be fetched from the database
     let limit = req.query.limit ? parseInt(req.query.limit) : 8;
+    //sortBy is used to sort the products by a specific field
     let sortBy = req.query.sortBy ? req.query.sortBy : "_id";
 
     Product.find()
